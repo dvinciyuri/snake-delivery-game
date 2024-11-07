@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Delivery Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            border: 1px solid #000;
+        }
+        .score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="score">Score: 0</div>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.querySelector('.score');
+
+        const gridSize = 20;
+        const tileCount = canvas.width / gridSize;
+
+        let snake = [{ x: 10, y: 10 }];
+        let direction = { x: 0, y: 0 };
+        let food = { x: 15, y: 15 };
+        let score = 0;
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw snake
+            ctx.fillStyle = 'green';
+            snake.forEach(segment => {
+                ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
+            });
+
+            // Draw food
+            ctx.fillStyle = 'brown';
+            ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+
+            // Draw score
+            scoreDisplay.textContent = 'Score: ' + score;
+        }
+
+        function update() {
+            const head = { x: snake <sup> </sup>.x + direction.x, y: snake <sup> </sup>.y + direction.y };
+
+            if (head.x === food.x && head.y === food.y) {
+                score++;
+                food = { x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount) };
+            } else {
+                snake.pop();
+            }
+
+            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount || snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+                alert('Game Over! Your score: ' + score);
+                snake = [{ x: 10, y: 10 }];
+                direction = { x: 0, y: 0 };
+                score = 0;
+            }
+
+            snake.unshift(head);
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            setTimeout(gameLoop, 100);
+        }
+
+        document.addEventListener('keydown', e => {
+            switch (e.key) {
+                case 'ArrowUp':
+                    direction = { x: 0, y: -1 };
+                    break;
+                case 'ArrowDown':
+                    direction = { x: 0, y: 1 };
+                    break;
+                case 'ArrowLeft':
+                    direction = { x: -1, y: 0 };
+                    break;
+                case 'ArrowRight':
+                    direction = { x: 1, y: 0 };
+                    break;
+            }
+        });
+
+        gameLoop();
+    </script>
+</body>
+</html>
